@@ -101,7 +101,15 @@ const mapDispatchToProps = dispatch => ({
   onAddContact: (name, number) =>
     dispatch(phoneBookActions.addContact(name, number)),
 });
+
 ContactForm.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      number: PropTypes.string,
+    }),
+  ),
   onAddContact: PropTypes.func.isRequired,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);

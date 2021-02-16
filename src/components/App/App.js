@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import ContactForm from '../ContactForm/ContactForm.js';
 import Filter from '../Filter/Filter.js';
 import ContactList from '../ContactList/ContactList.js';
+import PropTypes from 'prop-types';
 import s from './App.module.css';
 import anim from '../animation.module.css';
 import filterAnim from '../Filter/Filter.module.css';
@@ -51,4 +51,14 @@ function App({ contacts }) {
 const mapStateToProps = state => ({
   contacts: state.contacts.items,
 });
+
+App.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      number: PropTypes.string,
+    }),
+  ),
+};
 export default connect(mapStateToProps, null)(App);
