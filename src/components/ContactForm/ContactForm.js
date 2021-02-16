@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import phoneBookActions from '../../redux/phoneBook/phoneBook-actions';
+import ErrorPopup from '../ErrorPopup/ErrorPopup';
+import { CSSTransition } from 'react-transition-group';
 import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
+import anim from '../animation.module.css';
 
 class ContactForm extends Component {
   state = {
     name: '',
     number: '',
+    error: false,
+    errorMessage: '',
   };
 
   reset() {
@@ -24,16 +29,29 @@ class ContactForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = this.state;
-    this.props.onAddContact(name, number);
+    const contacts = this.props.contacts;
 
+    if (contacts.some(contact => contact.name === name)) {
+      this.setState({
+        error: true,
+        errorMessage: 'Этот контакт уже существует',
+      });
+      setTimeout(() => {
+        this.setState({ error: false });
+      }, 3000);
+      this.reset();
+      return;
+    }
+
+    this.props.onAddContact(name, number);
     this.reset();
   };
 
   render() {
-    const { name, number } = this.state;
+    const { name, number, errorMessage } = this.state;
 
     return (
-      <>
+      <div>
         <form className={s.wrapper} onSubmit={this.handleSubmit}>
           <label className={s.field}>
             <span className={s.name}>Name</span>
@@ -63,10 +81,22 @@ class ContactForm extends Component {
             Add contact
           </button>
         </form>
-      </>
+        <CSSTransition
+          in={this.state.error}
+          timeout={250}
+          classNames={anim}
+          unmountOnExit
+        >
+          <ErrorPopup text={errorMessage} />
+        </CSSTransition>
+      </div>
     );
   }
 }
+const mapStateToProps = state => ({
+  contacts: state.contacts.items,
+});
+
 const mapDispatchToProps = dispatch => ({
   onAddContact: (name, number) =>
     dispatch(phoneBookActions.addContact(name, number)),
@@ -74,4 +104,4 @@ const mapDispatchToProps = dispatch => ({
 ContactForm.propTypes = {
   onAddContact: PropTypes.func.isRequired,
 };
-export default connect(null, mapDispatchToProps)(ContactForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
