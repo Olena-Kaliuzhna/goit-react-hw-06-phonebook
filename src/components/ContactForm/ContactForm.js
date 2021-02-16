@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import phoneBookActions from '../../redux/phoneBook/phoneBook-actions';
 import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
 
@@ -22,7 +24,6 @@ class ContactForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = this.state;
-
     this.props.onAddContact(name, number);
 
     this.reset();
@@ -66,8 +67,11 @@ class ContactForm extends Component {
     );
   }
 }
-
+const mapDispatchToProps = dispatch => ({
+  onAddContact: (name, number) =>
+    dispatch(phoneBookActions.addContact(name, number)),
+});
 ContactForm.propTypes = {
   onAddContact: PropTypes.func.isRequired,
 };
-export default ContactForm;
+export default connect(null, mapDispatchToProps)(ContactForm);
